@@ -1,5 +1,7 @@
 import 'package:bitcoin_ticker/coin_data.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:io' show Platform;
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -7,24 +9,68 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  String selectedCurrency = 'USD';
+  late String selectedCrypto;
+  late String selectedCurrency;
+  late double rate;
 
-  List<DropdownMenuItem<String>> getDropdownItems() {
-    List<DropdownMenuItem<String>> DropdownItems = [];
+  CoinData coinData = CoinData();
+
+  void updateInfo() async {
+    var data = await coinData.getCoinData();
+    selectedCrypto = data['asset_id_base'];
+    selectedCurrency = data['asset_id_quote'];
+    rate = data['rate'];
+  }
+
+  DropdownButton<String> getAndroidDropdown() {
+    List<DropdownMenuItem<String>> dropdownItems = [];
 
     for (String currency in currenciesList) {
       var newItem = DropdownMenuItem(
         child: Text(currency),
         value: currency,
       );
-      DropdownItems.add(newItem);
+      dropdownItems.add(newItem);
     }
 
-    return DropdownItems;
+    return DropdownButton<String>(
+      value: selectedCurrency,
+      items: dropdownItems,
+      onChanged: (value) {
+        setState(() {
+          selectedCurrency = value!;
+        });
+      },
+    );
+  }
+
+  CupertinoPicker getCupertinoPicker() {
+    List<Text> pickerItems = [];
+    for (String currency in currenciesList) {
+      pickerItems.add(Text(currency));
+    }
+
+    return CupertinoPicker(
+        itemExtent: 32.0,
+        onSelectedItemChanged: (value) {
+          print(value);
+        },
+        children: pickerItems);
+  }
+
+  Widget getOSPicker() {
+    if (Platform.isIOS) {
+      return getCupertinoPicker();
+    } else if (Platform.isAndroid) {
+      return getAndroidDropdown();
+    } else
+      return Text('Undefined OS');
   }
 
   @override
   Widget build(BuildContext context) {
+    updateInfo();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('🤑 Coin Ticker'),
@@ -44,7 +90,7 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = ? USD',
+                  '1 $selectedCrypto = ${rate.toInt()} $selectedCurrency',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,
@@ -59,15 +105,7 @@ class _PriceScreenState extends State<PriceScreen> {
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 30.0),
             color: Colors.lightBlue,
-            child: DropdownButton<String>(
-              value: selectedCurrency,
-              items: getDropdownItems(),
-              onChanged: (value) {
-                setState(() {
-                  selectedCurrency = value!;
-                });
-              },
-            ),
+            child: getOSPicker(),
           ),
         ],
       ),
