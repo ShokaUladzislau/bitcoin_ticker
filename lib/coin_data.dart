@@ -32,9 +32,16 @@ const List<String> cryptoList = [
 ];
 
 class CoinData {
-  Future<dynamic> getCoinData() async {
+  Future getCoinData() async {
     http.Response response = await http.get(Uri.parse(
         "https://rest.coinapi.io/v1/exchangerate/BTC/USD?apikey=A84547D0-CAF6-4613-AF7D-E15214BCE052"));
-    return jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      return jsonDecode(response.body);
+    } else {
+      print("STATUSCODE = ${response.statusCode}");
+      throw 'Problem with the get request';
+    }
   }
 }
