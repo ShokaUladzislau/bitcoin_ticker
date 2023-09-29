@@ -32,12 +32,14 @@ const List<String> cryptoList = [
 ];
 
 class CoinData {
-  Future getCoinData(String selectedCurrency) async {
+  Future<String> getCoinData(
+      String selectedCrypto, String selectedCurrency) async {
     http.Response response = await http.get(Uri.parse(
-        "https://rest.coinapi.io/v1/exchangerate/BTC/$selectedCurrency?apikey=A84547D0-CAF6-4613-AF7D-E15214BCE052"));
+        "https://rest.coinapi.io/v1/exchangerate/$selectedCrypto/$selectedCurrency?apikey=A84547D0-CAF6-4613-AF7D-E15214BCE052"));
+    print(response.statusCode);
     print(response.body);
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return jsonDecode(response.body)['rate'].toStringAsFixed(0);
     } else {
       print("STATUSCODE = ${response.statusCode}");
       throw 'Problem with the get request';

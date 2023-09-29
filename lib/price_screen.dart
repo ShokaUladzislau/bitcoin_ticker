@@ -1,6 +1,7 @@
 import 'package:bitcoin_ticker/coin_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'crypto_card.dart';
 import 'dart:io' show Platform;
 
 class PriceScreen extends StatefulWidget {
@@ -9,20 +10,20 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  String selectedCrypto = "";
-  String selectedCurrency = "";
-  String rate = "?";
+  late CryptoCard cryptoCard0;
+  late CryptoCard cryptoCard1;
+  late CryptoCard cryptoCard2;
 
-  void updateInfo(String selectedCurrency) async {
-    var data = await CoinData().getCoinData(selectedCurrency);
-    setState(() {
-      selectedCrypto = data['asset_id_base'];
-      this.selectedCurrency = data['asset_id_quote'];
-      rate = data['rate'].toStringAsFixed(0);
-    });
+  void getInitCards() async {
+    cryptoCard0 = CryptoCard(cryptoList[0]);
+    cryptoCard1 = CryptoCard(cryptoList[1]);
+    cryptoCard2 = CryptoCard(cryptoList[2]);
+    await cryptoCard0.updateInfo(currenciesList[0]);
+    await cryptoCard1.updateInfo(currenciesList[0]);
+    await cryptoCard2.updateInfo(currenciesList[0]);
+
+    setState(() {});
   }
-
-  //CoinData coinData = CoinData();
 
   DropdownButton<String> getAndroidDropdown() {
     List<DropdownMenuItem<String>> dropdownItems = [];
@@ -36,12 +37,12 @@ class _PriceScreenState extends State<PriceScreen> {
     }
 
     return DropdownButton<String>(
-      value: selectedCurrency,
+      value: currenciesList[0],
       items: dropdownItems,
       onChanged: (value) {
         setState(() {
-          selectedCurrency = value!;
-          updateInfo(selectedCurrency);
+          //selectedCurrency = value!;
+          //updateInfo(selectedCrypto, selectedCurrency);
         });
       },
     );
@@ -55,12 +56,9 @@ class _PriceScreenState extends State<PriceScreen> {
 
     return CupertinoPicker(
         itemExtent: 32.0,
-        onSelectedItemChanged: (value) {
-          setState(() {
-            selectedCurrency = currenciesList[value];
-            rate = "?";
-            updateInfo(selectedCurrency);
-          });
+        onSelectedItemChanged: (value) async {
+          await cryptoCard0.updateInfo(currenciesList[value]);
+          setState(() {});
         },
         children: pickerItems);
   }
@@ -77,7 +75,7 @@ class _PriceScreenState extends State<PriceScreen> {
   @override
   void initState() {
     super.initState();
-    updateInfo(currenciesList[0]);
+    getInitCards();
   }
 
   @override
@@ -90,26 +88,22 @@ class _PriceScreenState extends State<PriceScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Padding(
-            padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+                child: cryptoCard0.getCard(),
               ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  '1 $selectedCrypto = $rate $selectedCurrency',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                  ),
-                ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+                child: cryptoCard1.getCard(),
               ),
-            ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+                child: cryptoCard2.getCard(),
+              ),
+            ],
           ),
           Container(
             height: 150.0,
