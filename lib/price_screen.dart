@@ -10,18 +10,16 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  late CryptoCard cryptoCard0;
-  late CryptoCard cryptoCard1;
-  late CryptoCard cryptoCard2;
+  List<CryptoCard> cryptocards = [
+    CryptoCard(cryptoList[0]),
+    CryptoCard(cryptoList[1]),
+    CryptoCard(cryptoList[2]),
+  ];
 
-  void getInitCards() async {
-    cryptoCard0 = CryptoCard(cryptoList[0]);
-    cryptoCard1 = CryptoCard(cryptoList[1]);
-    cryptoCard2 = CryptoCard(cryptoList[2]);
-    await cryptoCard0.updateInfo(currenciesList[0]);
-    await cryptoCard1.updateInfo(currenciesList[0]);
-    await cryptoCard2.updateInfo(currenciesList[0]);
-
+  void getCards(String currency) async {
+    for (CryptoCard card in cryptocards) {
+      await card.updateInfo(currency);
+    }
     setState(() {});
   }
 
@@ -57,8 +55,7 @@ class _PriceScreenState extends State<PriceScreen> {
     return CupertinoPicker(
         itemExtent: 32.0,
         onSelectedItemChanged: (value) async {
-          await cryptoCard0.updateInfo(currenciesList[value]);
-          setState(() {});
+          getCards(currenciesList[value]);
         },
         children: pickerItems);
   }
@@ -75,7 +72,7 @@ class _PriceScreenState extends State<PriceScreen> {
   @override
   void initState() {
     super.initState();
-    getInitCards();
+    getCards(currenciesList[0]);
   }
 
   @override
@@ -93,15 +90,15 @@ class _PriceScreenState extends State<PriceScreen> {
             children: [
               Padding(
                 padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-                child: cryptoCard0.getCard(),
+                child: cryptocards[0].getCard(),
               ),
               Padding(
                 padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-                child: cryptoCard1.getCard(),
+                child: cryptocards[1].getCard(),
               ),
               Padding(
                 padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-                child: cryptoCard2.getCard(),
+                child: cryptocards[2].getCard(),
               ),
             ],
           ),
