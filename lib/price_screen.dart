@@ -38,10 +38,7 @@ class _PriceScreenState extends State<PriceScreen> {
       value: currenciesList[0],
       items: dropdownItems,
       onChanged: (value) {
-        setState(() {
-          //selectedCurrency = value!;
-          //updateInfo(selectedCrypto, selectedCurrency);
-        });
+        setState(() {});
       },
     );
   }
