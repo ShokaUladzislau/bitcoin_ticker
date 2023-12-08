@@ -62,8 +62,10 @@ class _PriceScreenState extends State<PriceScreen> {
       return getCupertinoPicker();
     } else if (Platform.isAndroid) {
       return getAndroidDropdown();
-    } else
-      return Text('Undefined OS');
+    } else if (Platform.isMacOS) {
+      return getAndroidDropdown();
+    }
+    return Text('Undefined OS');
   }
 
   @override

@@ -3,7 +3,7 @@ import 'coin_data.dart';
 
 class CryptoCard {
   late String selectedCrypto;
-  late String selectedCurrency;
+  String selectedCurrency = '';
   String rate = '?';
 
   CryptoCard(this.selectedCrypto) {}

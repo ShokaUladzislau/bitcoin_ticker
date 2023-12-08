@@ -1,0 +1,4 @@
+class ApiConfig {
+  static const String apiKey = 'A84547D0-CAF6-4613-AF7D-E15214BCE052';
+  //A84547D0-CAF6-4613-AF7D-E15214BCE052
+}
